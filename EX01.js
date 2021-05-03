@@ -38,7 +38,8 @@ function myWorker(_job) {
 
 class Queue
 {
-    jobs = [];
+    jobs     = [];
+    myWorker;
 
     constructor(myWorker)
     {
@@ -62,9 +63,14 @@ class Queue
 
         for (let propriedade in this.jobs) {
             this.myWorker(this.jobs[propriedade]);
-            console.log('processou')
-            this.jobs.splice(propriedade, 1);
+            /**
+             * @note aqui foi implementado o delete porque o .splice modificava a posição dos elementos no array
+             * O que fazia com que o processamento pulasse alguns jobs a serem executados. Após processar todos os jobs,
+             * é limpado o array de jobs
+             */
+            delete this.jobs[propriedade];
         }
+        this.removeAllJobs();
     }
 
     removeJob(id)
@@ -108,10 +114,17 @@ queue.addJob({
        body: 'exemplo de conteudo 2'
     }
 })
+queue.addJob({
+    id: 3,
+    payload: {
+       filename: 'file3.txt',
+       body: 'exemplo de conteudo 3'
+    }
+})
 
 queue.getJobs();
 // queue.removeAllJobs();
-queue.removeJob(1);
+// queue.removeJob(1);
 
 // queue.removeJob(0);
 queue.processQueue();
